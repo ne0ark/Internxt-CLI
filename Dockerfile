@@ -19,8 +19,8 @@ RUN apk add --no-cache \
 RUN npm install -g @internxt/cli
 
 # Copy the Internxt CLI from the builder stage
-COPY --from=builder /usr/local/bin/internxt /usr/local/bin/internxt
-COPY --from=builder /usr/local/lib/node_modules/@internxt /usr/local/lib/node_modules/@internxt
+# COPY --from=builder /usr/local/bin/internxt /usr/local/bin/internxt
+# COPY --from=builder /usr/local/lib/node_modules/@internxt /usr/local/lib/node_modules/@internxt
 
 # Set environment variables
 ENV INTERNXT_EMAIL=""
