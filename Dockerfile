@@ -17,7 +17,7 @@ RUN apk add --update --no-cache \
 
 # Install the Internxt CLI globally
 RUN npm install -g @internxt/cli
-RUN npm install -g @totp-generator
+RUN npm install totp-generator
 
 # Copy the Internxt CLI from the builder stage
 # COPY --from=builder /usr/local/bin/internxt /usr/local/bin/internxt
