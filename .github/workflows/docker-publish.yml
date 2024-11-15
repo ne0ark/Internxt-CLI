@@ -63,6 +63,6 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ secrets.DOCKER_HUB_USERNAME }}/Internxt-CLI:${{ env.latest_release }}
-            ${{ secrets.DOCKER_HUB_USERNAME }}/Internxt-CLI:main
+            ${{ secrets.DOCKER_HUB_USERNAME }}/internxt-cli:${{ env.latest_release }}
+            ${{ secrets.DOCKER_HUB_USERNAME }}/internxt-cli:main
           platforms: linux/amd64
