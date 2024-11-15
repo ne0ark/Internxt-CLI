@@ -8,7 +8,7 @@ WORKDIR /app
 FROM alpine:latest
 
 # Install necessary packages
-RUN apk add --no-cache \
+RUN apk add --update --no-cache \
     bash \
     ca-certificates \
     openssl \
