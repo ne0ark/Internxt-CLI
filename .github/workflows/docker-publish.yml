@@ -1,98 +1,68 @@
-name: Docker
-
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
+name: Check for new internxt-cli release and build Docker image
 
 on:
   schedule:
-    - cron: '22 3 * * *'
-  push:
-    branches: [ "main" ]
-    # Publish semver tags as releases.
-    tags: [ 'v*.*.*' ]
-  pull_request:
-    branches: [ "main" ]
-
-env:
-  # Use docker.io for Docker Hub if empty
-  REGISTRY: ghcr.io
-  # github.repository as <account>/<repo>
-  IMAGE_NAME: ${{ github.repository }}
-
+    - cron: '*/5 * * * *' # Runs every 6 hours (adjust as needed)
 
 jobs:
-  build:
-
+  check-new-release:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-      # This is used to complete the identity challenge
-      # with sigstore/fulcio when running outside of PRs.
-      id-token: write
 
     steps:
+      # Checkout the repository so you can perform git operations
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Install the cosign tool except on PR
-      # https://github.com/sigstore/cosign-installer
-      - name: Install cosign
-        if: github.event_name != 'pull_request'
-        uses: sigstore/cosign-installer@59acb6260d9c0ba8f4a2f9d9b48431a222b68e20 #v3.5.0
+      - name: Check latest release from SpoofDPI repository
+        id: check_release
+        run: |
+          latest_release=$(curl -s https://api.github.com/repos/internxt/cli/releases/latest | jq -r .tag_name)
+          echo "Latest release tag is $latest_release"
+
+          # Get the last known release from cache or a file (we'll use a file here for simplicity)
+          if [ -f .last_release ]; then
+            last_known_release=$(cat .last_release)
+            echo "Last known release is $last_known_release"
+          else
+            last_known_release=""
+          fi
+
+          # Compare the latest release with the last known release
+          if [ "$latest_release" != "$last_known_release" ]; then
+            echo "New release detected: $latest_release"
+            echo "latest_release=$latest_release" >> $GITHUB_ENV
+          else
+            echo "No new release found."
+            exit 0
+          fi
+
+      # Commit the new release tag to the repository
+      - name: Save the new release
+        if: env.latest_release
+        run: |
+          echo ${{ env.latest_release }} > .last_release
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add .last_release
+          git commit -m "Update latest release to ${{ env.latest_release }}"
+          git push
+
+      # Log in to Docker Hub
+      - name: Log in to Docker Hub
+        if: env.latest_release
+        uses: docker/login-action@v3
         with:
-          cosign-release: 'v2.2.4'
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      # Set up BuildKit Docker container builder to be able to build
-      # multi-platform images and export cache
-      # https://github.com/docker/setup-buildx-action
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@f95db51fddba0c2d1ec667646a06c2ce06100226 # v3.0.0
-
-      # Login against a Docker registry except on PR
-      # https://github.com/docker/login-action
-      - name: Log into registry ${{ env.REGISTRY }}
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      # Extract metadata (tags, labels) for Docker
-      # https://github.com/docker/metadata-action
-      - name: Extract Docker metadata
-        id: meta
-        uses: docker/metadata-action@96383f45573cb7f253c731d3b3ab81c87ef81934 # v5.0.0
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
-      # Build and push Docker image with Buildx (don't push on PR)
-      # https://github.com/docker/build-push-action
-      - name: Build and push Docker image
-        id: build-and-push
-        uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 # v5.0.0
+      # Build and push new Docker image
+      - name: Build and push new Docker image
+        if: env.latest_release
+        uses: docker/build-push-action@v5
         with:
           context: .
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      # Sign the resulting Docker image digest except on PRs.
-      # This will only write to the public Rekor transparency log when the Docker
-      # repository is public to avoid leaking data.  If you would like to publish
-      # transparency data even for private images, pass --force to cosign below.
-      # https://github.com/sigstore/cosign
-      - name: Sign the published Docker image
-        if: ${{ github.event_name != 'pull_request' }}
-        env:
-          # https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable
-          TAGS: ${{ steps.meta.outputs.tags }}
-          DIGEST: ${{ steps.build-and-push.outputs.digest }}
-        # This step uses the identity token to provision an ephemeral certificate
-        # against the sigstore community Fulcio instance.
-        run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_HUB_USERNAME }}/spoofdpi:${{ env.latest_release }}
+            ${{ secrets.DOCKER_HUB_USERNAME }}/spoofdpi:main
+          platforms: linux/amd64
