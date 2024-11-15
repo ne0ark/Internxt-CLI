@@ -4,9 +4,6 @@ FROM node:alpine AS builder
 # Set the working directory
 WORKDIR /app
 
-# Install the Internxt CLI globally
-RUN npm install -g @internxt/cli
-
 # Stage 2: Final Stage
 FROM alpine:latest
 
@@ -17,6 +14,9 @@ RUN apk add --no-cache \
     openssl \
     nodejs \
     npm
+
+# Install the Internxt CLI globally
+RUN npm install -g @internxt/cli
 
 # Copy the Internxt CLI from the builder stage
 COPY --from=builder /usr/local/bin/internxt /usr/local/bin/internxt
