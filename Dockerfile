@@ -13,11 +13,11 @@ RUN apk add --update --no-cache \
     ca-certificates \
     openssl \
     nodejs \
-    npm \
-    mintotp
+    npm 
 
 # Install the Internxt CLI globally
 RUN npm install -g @internxt/cli
+RUN npm install -g @totp-generator
 
 # Copy the Internxt CLI from the builder stage
 # COPY --from=builder /usr/local/bin/internxt /usr/local/bin/internxt
@@ -38,7 +38,7 @@ RUN echo '#!/bin/bash' > /entrypoint.sh && \
     echo 'fi' >> /entrypoint.sh && \
     echo 'if [ -n "$INTERNXT_TOTP_SECRET" ]; then' >> /entrypoint.sh && \
     echo '  echo "Generating TOTP..."' >> /entrypoint.sh && \
-    echo '  TOTP=$(echo -n "$INTERNXT_TOTP_SECRET" | mintotp)' >> /entrypoint.sh && \
+    echo '  TOTP=$(echo -n "$INTERNXT_TOTP_SECRET" | totp-generator)' >> /entrypoint.sh && \
     echo '  echo "Logging into Internxt..."' >> /entrypoint.sh && \
     echo '  internxt login --email="$INTERNXT_EMAIL" --password="$INTERNXT_PASSWORD" --twofactor="$TOTP" --non-interactive' >> /entrypoint.sh && \
     echo 'else' >> /entrypoint.sh && \
