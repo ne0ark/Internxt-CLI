@@ -20,7 +20,7 @@ RUN apk add --no-cache \
 COPY --from=builder /usr/local/bin/internxt /usr/local/bin/internxt
 COPY --from=builder /usr/local/lib/node_modules/@internxt /usr/local/lib/node_modules/@internxt
 
-# Set environment variables (modify as needed)
+# Set environment variables
 ENV INTERNXT_EMAIL=""
 ENV INTERNXT_PASSWORD=""
 ENV INTERNXT_TOTP=""
@@ -47,8 +47,10 @@ RUN echo '#!/bin/bash' > /entrypoint.sh && \
     echo 'exec "$@"' >> /entrypoint.sh && \
     chmod +x /entrypoint.sh
 
-# Expose the WebDAV port
-EXPOSE 3005
+# Expose default WebDAV port (documentation for runtime port mapping)
+# EXPOSE 3005
+
+# Note: To dynamically map ports, use Docker runtime `-p` or `-e INTERNXT_WEB_PORT` configurations.
 
 # Set the entrypoint
 ENTRYPOINT ["/entrypoint.sh"]
