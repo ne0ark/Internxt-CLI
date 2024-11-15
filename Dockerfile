@@ -13,7 +13,8 @@ RUN apk add --update --no-cache \
     ca-certificates \
     openssl \
     nodejs \
-    npm
+    npm \
+    mintotp
 
 # Install the Internxt CLI globally
 RUN npm install -g @internxt/cli
@@ -26,7 +27,7 @@ RUN npm install -g @internxt/cli
 ENV INTERNXT_EMAIL=""
 ENV INTERNXT_PASSWORD=""
 ENV INTERNXT_TOTP=""
-ENV INTERNXT_WEB_PORT=""
+ENV INTERNXT_WEB_PORT="3005"
 
 # Create an entrypoint script
 RUN echo '#!/bin/bash' > /entrypoint.sh && \
@@ -35,20 +36,25 @@ RUN echo '#!/bin/bash' > /entrypoint.sh && \
     echo '  echo "Error: INTERNXT_EMAIL and INTERNXT_PASSWORD must be set."' >> /entrypoint.sh && \
     echo '  exit 1' >> /entrypoint.sh && \
     echo 'fi' >> /entrypoint.sh && \
-    echo 'if [ -n "$INTERNXT_TOTP" ]; then' >> /entrypoint.sh && \
-    echo '  internxt login --email "$INTERNXT_EMAIL" --password "$INTERNXT_PASSWORD" --totp "$INTERNXT_TOTP"' >> /entrypoint.sh && \
+    echo 'if [ -n "$INTERNXT_TOTP_SECRET" ]; then' >> /entrypoint.sh && \
+    echo '  echo "Generating TOTP..."' >> /entrypoint.sh && \
+    echo '  TOTP=$(echo -n "$INTERNXT_TOTP_SECRET" | mintotp)' >> /entrypoint.sh && \
+    echo '  echo "Logging into Internxt..."' >> /entrypoint.sh && \
+    echo '  internxt login --email="$INTERNXT_EMAIL" --password="$INTERNXT_PASSWORD" --twofactor="$TOTP" --non-interactive' >> /entrypoint.sh && \
     echo 'else' >> /entrypoint.sh && \
-    echo '  internxt login --email "$INTERNXT_EMAIL" --password "$INTERNXT_PASSWORD"' >> /entrypoint.sh && \
+    echo '  echo "Logging into Internxt without TOTP..."' >> /entrypoint.sh && \
+    echo '  internxt login --email="$INTERNXT_EMAIL" --password="$INTERNXT_PASSWORD" --non-interactive' >> /entrypoint.sh && \
     echo 'fi' >> /entrypoint.sh && \
-    echo 'if [ -n "$INTERNXT_WEB_PORT" ]; then' >> /entrypoint.sh && \
-    echo '  internxt webdav enable --port "$INTERNXT_WEB_PORT"' >> /entrypoint.sh && \
-    echo 'else' >> /entrypoint.sh && \
-    echo '  internxt webdav enable' >> /entrypoint.sh && \
-    echo 'fi' >> /entrypoint.sh && \
-    echo 'internxt webdav status' >> /entrypoint.sh && \
-    echo 'exec "$@"' >> /entrypoint.sh && \
+    echo 'echo "Enabling WebDAV..."' >> /entrypoint.sh && \
+    echo 'internxt webdav-config --port="$INTERNXT_WEB_PORT"' >> /entrypoint.sh && \
+    echo 'internxt add-cert' >> /entrypoint.sh && \
+    echo 'internxt webdav enable' >> /entrypoint.sh && \
+    echo 'echo "Starting WebDAV status monitoring..."' >> /entrypoint.sh && \
+    echo 'while true; do' >> /entrypoint.sh && \
+    echo '  internxt webdav status' >> /entrypoint.sh && \
+    echo '  sleep 300' >> /entrypoint.sh && \
+    echo 'done' >> /entrypoint.sh && \
     chmod +x /entrypoint.sh
-
 # Expose default WebDAV port (documentation for runtime port mapping)
 # EXPOSE 3005
 
