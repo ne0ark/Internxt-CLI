@@ -61,5 +61,5 @@ RUN echo '#!/bin/bash' > /entrypoint.sh && \
 # Note: To dynamically map ports, use Docker runtime `-p` or `-e INTERNXT_WEB_PORT` configurations.
 
 # Set the entrypoint
-# CMD ["tail", "-f", "/dev/null"]
-ENTRYPOINT ["/entrypoint.sh"]
+CMD ["tail", "-f", "/dev/null"]
+# ENTRYPOINT ["/entrypoint.sh"]
