@@ -13,7 +13,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Check latest release from SpoofDPI repository
+      - name: Check latest release from Internxt-CLI repository
         id: check_release
         run: |
           latest_release=$(curl -s https://api.github.com/repos/internxt/cli/releases/latest | jq -r .tag_name)
@@ -63,6 +63,6 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ secrets.DOCKER_HUB_USERNAME }}/spoofdpi:${{ env.latest_release }}
-            ${{ secrets.DOCKER_HUB_USERNAME }}/spoofdpi:main
+            ${{ secrets.DOCKER_HUB_USERNAME }}/Internxt-CLI:${{ env.latest_release }}
+            ${{ secrets.DOCKER_HUB_USERNAME }}/Internxt-CLI:main
           platforms: linux/amd64
