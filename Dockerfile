@@ -14,7 +14,9 @@ FROM alpine:latest
 RUN apk add --no-cache \
     bash \
     ca-certificates \
-    openssl
+    openssl \
+    nodejs \
+    npm
 
 # Copy the Internxt CLI from the builder stage
 COPY --from=builder /usr/local/bin/internxt /usr/local/bin/internxt
