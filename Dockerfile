@@ -37,7 +37,7 @@ RUN echo '#!/bin/bash' > /entrypoint.sh && \
     echo '  echo "Error: INTERNXT_EMAIL and INTERNXT_PASSWORD must be set."' >> /entrypoint.sh && \
     echo '  exit 1' >> /entrypoint.sh && \
     echo 'fi' >> /entrypoint.sh && \
-    echo 'if [ -n "$INTERNXT_TOTP_SECRET" ]; then' >> /entrypoint.sh && \
+    echo 'if [ -n "$INTERNXT_TOTP" ]; then' >> /entrypoint.sh && \
     echo '  echo "Generating TOTP..."' >> /entrypoint.sh && \
     echo '  TOTP=$(totp "$INTERNXT_TOTP_SECRET")' >> /entrypoint.sh && \
     echo '  echo "Logging into Internxt..."' >> /entrypoint.sh && \
