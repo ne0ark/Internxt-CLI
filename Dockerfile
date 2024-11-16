@@ -2,7 +2,8 @@
 FROM node:alpine AS builder
 
 # Set the working directory
-WORKDIR /app
+WORKDIR /home
+COPY ./ /home
 
 # Stage 2: Final Stage
 FROM alpine:latest
@@ -13,11 +14,12 @@ RUN apk add --update --no-cache \
     ca-certificates \
     openssl \
     nodejs \
-    npm 
+    npm \
+    sudo
 
 # Install the Internxt CLI globally
 RUN npm install -g @internxt/cli
-# RUN npm install totp-generator
+RUN npm install gen-totp
 
 # Copy the Internxt CLI from the builder stage
 # COPY --from=builder /usr/local/bin/internxt /usr/local/bin/internxt
@@ -46,7 +48,7 @@ RUN echo '#!/bin/bash' > /entrypoint.sh && \
     echo '  internxt login --email="$INTERNXT_EMAIL" --password="$INTERNXT_PASSWORD" --non-interactive' >> /entrypoint.sh && \
     echo 'fi' >> /entrypoint.sh && \
     echo 'echo "Enabling WebDAV..."' >> /entrypoint.sh && \
-    echo 'internxt webdav-config --port="$INTERNXT_WEB_PORT"' >> /entrypoint.sh && \
+    echo 'internxt webdav-config change-port --port="$INTERNXT_WEB_PORT"' >> /entrypoint.sh && \
     echo 'internxt add-cert' >> /entrypoint.sh && \
     echo 'internxt webdav enable' >> /entrypoint.sh && \
     echo 'echo "Starting WebDAV status monitoring..."' >> /entrypoint.sh && \
