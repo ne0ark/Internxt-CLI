@@ -18,7 +18,7 @@ RUN apk add --update --no-cache \
 
 # Install the Internxt CLI globally
 RUN npm install -g @internxt/cli
-RUN npm install gen-totp
+RUN npm install -g hotp-totp-cli
 
 # Copy the Internxt CLI from the builder stage
 # COPY --from=builder /usr/local/bin/internxt /usr/local/bin/internxt
@@ -28,7 +28,7 @@ RUN npm install gen-totp
 ENV INTERNXT_EMAIL=""
 ENV INTERNXT_PASSWORD=""
 ENV INTERNXT_TOTP=""
-ENV INTERNXT_WEB_PORT="3005"
+ENV INTERNXT_WEB_PORT="7111"
 
 # Create an entrypoint script
 RUN echo '#!/bin/bash' > /entrypoint.sh && \
@@ -39,7 +39,7 @@ RUN echo '#!/bin/bash' > /entrypoint.sh && \
     echo 'fi' >> /entrypoint.sh && \
     echo 'if [ -n "$INTERNXT_TOTP_SECRET" ]; then' >> /entrypoint.sh && \
     echo '  echo "Generating TOTP..."' >> /entrypoint.sh && \
-    echo '  TOTP=$(echo -n "$INTERNXT_TOTP_SECRET" | totp-generator)' >> /entrypoint.sh && \
+    echo '  TOTP=$(totp "$INTERNXT_TOTP_SECRET")' >> /entrypoint.sh && \
     echo '  echo "Logging into Internxt..."' >> /entrypoint.sh && \
     echo '  internxt login --email="$INTERNXT_EMAIL" --password="$INTERNXT_PASSWORD" --twofactor="$TOTP" --non-interactive' >> /entrypoint.sh && \
     echo 'else' >> /entrypoint.sh && \
