@@ -1,8 +1,8 @@
 name: Build and Publish Docker Images
 
 on:
-  schedule:
-   - cron: '0 3 * * *'
+#  schedule:
+#   - cron: '0 3 * * *'
   release:
     types: [published]
 
