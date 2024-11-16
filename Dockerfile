@@ -52,6 +52,7 @@ RUN echo '#!/bin/bash' > /entrypoint.sh && \
     echo 'internxt webdav enable' >> /entrypoint.sh && \
     echo 'echo "Starting WebDAV status monitoring..."' >> /entrypoint.sh && \
     echo 'while true; do' >> /entrypoint.sh && \
+    echo 'internxt --version' >> /entrypoint.sh && \
     echo '  internxt webdav status' >> /entrypoint.sh && \
     echo '  sleep 300' >> /entrypoint.sh && \
     echo 'done' >> /entrypoint.sh && \
