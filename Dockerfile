@@ -1,12 +1,11 @@
 # Stage 1: Build Stage
 FROM node:alpine AS builder
 
-# Set the working directory
-WORKDIR /home
-COPY ./ /home
-
 # Stage 2: Final Stage
 FROM alpine:latest
+
+# Set the working directory
+WORKDIR /app
 
 # Install necessary packages
 RUN apk add --update --no-cache \
