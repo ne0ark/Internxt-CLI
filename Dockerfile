@@ -39,7 +39,7 @@ RUN echo '#!/bin/bash' > /entrypoint.sh && \
     echo 'fi' >> /entrypoint.sh && \
     echo 'if [ -n "$INTERNXT_TOTP" ]; then' >> /entrypoint.sh && \
     echo '  echo "Generating TOTP..."' >> /entrypoint.sh && \
-    echo '  TOTP=$(totp "$INTERNXT_TOTP_SECRET")' >> /entrypoint.sh && \
+    echo '  TOTP=$(totp "$INTERNXT_TOTP")' >> /entrypoint.sh && \
     echo '  echo "Logging into Internxt..."' >> /entrypoint.sh && \
     echo '  internxt login --email="$INTERNXT_EMAIL" --password="$INTERNXT_PASSWORD" --twofactor="$TOTP" --non-interactive' >> /entrypoint.sh && \
     echo 'else' >> /entrypoint.sh && \
