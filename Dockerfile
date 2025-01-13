@@ -48,7 +48,7 @@ RUN echo '#!/bin/bash' > /entrypoint.sh && \
     echo 'fi' >> /entrypoint.sh && \
     echo 'echo "Enabling WebDAV..."' >> /entrypoint.sh && \
   #  echo 'internxt webdav-config change-port --port="$INTERNXT_WEB_PORT"' >> /entrypoint.sh && \
-    echo 'internxt webdav-config set-http' >> /entrypoint.sh && \
+    echo 'internxt webdav-config --http' >> /entrypoint.sh && \
     echo 'internxt webdav enable' >> /entrypoint.sh && \
     echo 'echo "Starting WebDAV status monitoring..."' >> /entrypoint.sh && \
     echo 'while true; do' >> /entrypoint.sh && \
