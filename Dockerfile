@@ -34,17 +34,17 @@ ENV INTERNXT_TOTP=""
 RUN echo '#!/bin/bash' > /entrypoint.sh && \
     echo 'set -e' >> /entrypoint.sh && \
     echo 'if [ -z "$INTERNXT_EMAIL" ] || [ -z "$INTERNXT_PASSWORD" ]; then' >> /entrypoint.sh && \
-    echo '  echo "Error: INTERNXT_EMAIL and INTERNXT_PASSWORD must be set."' >> /entrypoint.sh && \
-    echo '  exit 1' >> /entrypoint.sh && \
+    echo 'echo "Error: INTERNXT_EMAIL and INTERNXT_PASSWORD must be set."' >> /entrypoint.sh && \
+    echo 'exit 1' >> /entrypoint.sh && \
     echo 'fi' >> /entrypoint.sh && \
     echo 'if [ -n "$INTERNXT_TOTP" ]; then' >> /entrypoint.sh && \
-    echo '  echo "Generating TOTP..."' >> /entrypoint.sh && \
-    echo '  TOTP=$(totp "$INTERNXT_TOTP")' >> /entrypoint.sh && \
-    echo '  echo "Logging into Internxt..."' >> /entrypoint.sh && \
-    echo '  internxt login --email="$INTERNXT_EMAIL" --password="$INTERNXT_PASSWORD" --twofactor="$TOTP" --non-interactive' >> /entrypoint.sh && \
+    echo 'echo "Generating TOTP..."' >> /entrypoint.sh && \
+    echo 'TOTP=$(totp "$INTERNXT_TOTP")' >> /entrypoint.sh && \
+    echo 'echo "Logging into Internxt..."' >> /entrypoint.sh && \
+    echo 'internxt login --email="$INTERNXT_EMAIL" --password="$INTERNXT_PASSWORD" --twofactor="$TOTP" --non-interactive' >> /entrypoint.sh && \
     echo 'else' >> /entrypoint.sh && \
-    echo '  echo "Logging into Internxt without TOTP..."' >> /entrypoint.sh && \
-    echo '  internxt login --email="$INTERNXT_EMAIL" --password="$INTERNXT_PASSWORD" --non-interactive' >> /entrypoint.sh && \
+    echo 'echo "Logging into Internxt without TOTP..."' >> /entrypoint.sh && \
+    echo 'internxt login --email="$INTERNXT_EMAIL" --password="$INTERNXT_PASSWORD" --non-interactive' >> /entrypoint.sh && \
     echo 'fi' >> /entrypoint.sh && \
     echo 'echo "Enabling WebDAV..."' >> /entrypoint.sh && \
   #  echo 'internxt webdav-config change-port --port="$INTERNXT_WEB_PORT"' >> /entrypoint.sh && \
@@ -53,8 +53,8 @@ RUN echo '#!/bin/bash' > /entrypoint.sh && \
     echo 'echo "Starting WebDAV status monitoring..."' >> /entrypoint.sh && \
     echo 'while true; do' >> /entrypoint.sh && \
     echo 'internxt --version' >> /entrypoint.sh && \
-    echo '  internxt webdav status' >> /entrypoint.sh && \
-    echo '  sleep 300' >> /entrypoint.sh && \
+    echo 'internxt webdav status' >> /entrypoint.sh && \
+    echo 'sleep 300' >> /entrypoint.sh && \
     echo 'done' >> /entrypoint.sh && \
     chmod +x /entrypoint.sh
 # Expose default WebDAV port (documentation for runtime port mapping)
