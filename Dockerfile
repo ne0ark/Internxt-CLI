@@ -28,7 +28,7 @@ RUN npm install -g hotp-totp-cli
 ENV INTERNXT_EMAIL=""
 ENV INTERNXT_PASSWORD=""
 ENV INTERNXT_TOTP=""
-# ENV INTERNXT_WEB_PORT="7111"
+ENV INTERNXT_WEB_PORT="3005"
 
 # Create an entrypoint script
 RUN echo '#!/bin/bash' > /entrypoint.sh && \
@@ -47,7 +47,7 @@ RUN echo '#!/bin/bash' > /entrypoint.sh && \
     echo 'internxt login --email="$INTERNXT_EMAIL" --password="$INTERNXT_PASSWORD" --non-interactive' >> /entrypoint.sh && \
     echo 'fi' >> /entrypoint.sh && \
     echo 'echo "Enabling WebDAV..."' >> /entrypoint.sh && \
-  #  echo 'internxt webdav-config change-port --port="$INTERNXT_WEB_PORT"' >> /entrypoint.sh && \
+    echo 'internxt webdav-config --port="$INTERNXT_WEB_PORT"' >> /entrypoint.sh && \
     echo 'internxt webdav-config --http' >> /entrypoint.sh && \
     echo 'internxt webdav enable' >> /entrypoint.sh && \
     echo 'echo "Starting WebDAV status monitoring..."' >> /entrypoint.sh && \
