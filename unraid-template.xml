@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Container>
+  <Name>Internxt WebDAV</Name>
+  <Author>ne0ark</Author>
+  <Summary>WebDAV server for Internxt Drive storage</Summary>
+  <Description>Docker container running the official Internxt WebDAV server. Provides WebDAV access to your Internxt Drive storage. Supports optional 2FA via INXT_TWOFACTORCODE or INXT_OTPTOKEN. Default port: 3005 (https).</Description>
+  <Support>https://github.com/ne0ark/Internxt-CLI/issues</Support>
+  <Registry>https://hub.docker.com/r/ne0ark/internxt-cli</Registry>
+  <Repository>ne0ark/internxt-cli</Repository>
+  <ProjectURL>https://github.com/ne0ark/Internxt-CLI</ProjectURL>
+  <Icon>https://raw.githubusercontent.com/ne0ark/Internxt-CLI/main/icon.png</Icon>
+  <Forked>false</Forked>
+  <Network>bridge</Network>
+  <Config>
+    <Variable>
+      <Name>INXT_USER</Name>
+      <DisplayName>Internxt Email</DisplayName>
+      <Description>Your Internxt account email address (required)</Description>
+      <DefaultValue></DefaultValue>
+    </Variable>
+    <Variable>
+      <Name>INXT_PASSWORD</Name>
+      <DisplayName>Internxt Password</DisplayName>
+      <Description>Your Internxt account password (required)</Description>
+      <DefaultValue></DefaultValue>
+    </Variable>
+    <Variable>
+      <Name>INXT_TWOFACTORCODE</Name>
+      <DisplayName>2FA Code (optional)</DisplayName>
+      <Description>Current 2FA one-time code. Required if 2FA is enabled and OTPTOKEN is not set.</Description>
+      <DefaultValue></DefaultValue>
+    </Variable>
+    <Variable>
+      <Name>INXT_OTPTOKEN</Name>
+      <DisplayName>OTP Secret (optional)</DisplayName>
+      <Description>OTP secret for auto-generating 2FA codes. Use instead of TWOFACTORCODE for automated environments.</Description>
+      <DefaultValue></DefaultValue>
+    </Variable>
+    <Variable>
+      <Name>WEBDAV_PORT</Name>
+      <DisplayName>WebDAV Port</DisplayName>
+      <Description>Port for the WebDAV server. Default: 3005.</Description>
+      <DefaultValue>3005</DefaultValue>
+    </Variable>
+    <Variable>
+      <Name>WEBDAV_PROTOCOL</Name>
+      <DisplayName>WebDAV Protocol</DisplayName>
+      <Description>Protocol: 'http' or 'https'. Default: https</Description>
+      <DefaultValue>https</DefaultValue>
+    </Variable>
+  </Config>
+  <Port>
+    <Config>
+      <Name>WebDAV Port</Name>
+      <Descr>WebDAV server port (default 3005)</Descr>
+      <DefaultValue>3005</DefaultValue>
+      <DisplayName>WebDAV Port</DisplayName>
+      <Mode>host</Mode>
+      <VarName>WEBDAV_PORT</VarName>
+    </Config>
+  </Port>
+</Container>
